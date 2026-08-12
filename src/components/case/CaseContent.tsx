@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import CaseMediaCollage from "./media/CaseMediaCollage";
 
 import { buildCaseMedia } from "@/types/case-media";
@@ -69,23 +71,32 @@ export default function CaseContent({
           */}
           <aside>
             <div
-              role="img"
-              aria-label={
-                caseData.portrait
-                  .alt
-              }
               className="
+                relative
                 aspect-[4/5]
                 w-full
+                overflow-hidden
 
                 bg-black/10
-                bg-cover
-                bg-center
               "
-              style={{
-                backgroundImage: `url("${caseData.portrait.src}")`,
-              }}
-            />
+            >
+              <Image
+                src={caseData.portrait.src}
+                alt={caseData.portrait.alt}
+                fill
+                loading="eager"
+                fetchPriority="high"
+                sizes="
+    (max-width: 767px) calc(100vw - 5rem),
+    (max-width: 1023px) 32vw,
+    24vw
+  "
+                className="
+    object-cover
+    object-center
+  "
+              />
+            </div>
 
             <dl
               className="

@@ -1,9 +1,12 @@
 "use client";
 
 import {
+  useEffect,
   useRef,
   useState,
 } from "react";
+
+import { useRouter } from "next/navigation";
 
 import gsap from "gsap";
 import { Flip } from "gsap/Flip";
@@ -34,6 +37,9 @@ const LAST_FOLDER_ID =
   ]?.id ?? null;
 
 export default function FolderStack() {
+  const router =
+    useRouter();
+
   const stackRef =
     useRef<HTMLDivElement>(null);
 
@@ -80,6 +86,31 @@ export default function FolderStack() {
     isTransitioning,
     requestCaseTransition,
   } = useTransitionController();
+
+  /*
+   * Prefetch case routes once the homepage is mounted.
+   *
+   * The homepage architect tabs are buttons rather than
+   * Next <Link> elements, so they do not receive automatic
+   * route prefetching.
+   *
+   * There are only eight static case routes, so warming
+   * those route payloads keeps the transition responsive
+   * without changing navigation ownership.
+   */
+  useEffect(() => {
+    categories.forEach(
+      (category) => {
+        category.architects.forEach(
+          (architect) => {
+            router.prefetch(
+              `/cases/${architect.slug}`,
+            );
+          },
+        );
+      },
+    );
+  }, [router]);
 
   /*
    * Keep handler-created GSAP animations inside
