@@ -741,19 +741,19 @@ export default function FolderStack() {
                 `}
                 style={{
                   /*
-                   * Temporary folder is front-most.
+                   * Preserve natural folder stacking.
                    *
-                   * Permanent last folder stays above
-                   * ordinary closed folders.
+                   * Later folders must remain above earlier
+                   * folders so their architect tabs stay
+                   * visible in the intentional overlap zone
+                   * when an earlier folder is expanded.
+                   *
+                   * The folder bodies themselves begin below
+                   * that overlap, so source-order stacking
+                   * keeps the file-stack effect without the
+                   * opened content covering following tabs.
                    */
-                  zIndex:
-                    isTemporaryOpen
-                      ? categories.length +
-                        3
-                      : isLastFolder
-                        ? categories.length +
-                          2
-                        : index + 1,
+                  zIndex: index + 1,
                 }}
               >
                 <Folder
