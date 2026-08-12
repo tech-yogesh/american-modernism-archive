@@ -1,0 +1,219 @@
+@import "tailwindcss";
+
+/* =========================================================
+   American Modernism Archive — GLOBAL DESIGN FOUNDATION
+
+   Reference-derived values:
+   - Overall dark archival direction
+   - Warm off-white typography
+   - Strong red / blue / yellow / green folder palette
+   - High-contrast editorial presentation
+
+   The exact production design tokens used by American Modernism Archive are
+   not publicly exposed here, so the values below are visual
+   approximations rather than claimed source values.
+
+   Pragmatic values:
+   - Gutters
+   - section spacing
+   - header heights
+   - z-index scale
+   - system font fallbacks
+   ========================================================= */
+
+:root {
+  /* -------------------------------------------------------
+     COLORS — reference-derived visual direction
+     ------------------------------------------------------- */
+
+  --color-bg: #171717;
+  --color-bg-elevated: #202020;
+
+  --color-text-primary: #f2efe7;
+  --color-text-secondary: #d4d0c8;
+  --color-text-muted: #8e8b85;
+
+  --color-border: rgba(242, 239, 231, 0.2);
+  --color-divider: rgba(242, 239, 231, 0.12);
+
+ /* Folder body colors — visually approximated from reference */
+--color-folder-organic: #2d52d5;
+--color-folder-expressive: #168775;
+--color-folder-monumental: #64217d;
+--color-folder-contextual: #e51e1b;
+
+/* Reusable architect-tab colors */
+--color-tab-blue: #2d52d5;
+--color-tab-red: #e51e1b;
+--color-tab-yellow: #f8dc2f;
+--color-tab-black: #080808;
+
+
+  /* -------------------------------------------------------
+     TYPOGRAPHY
+
+     System fallbacks for now.
+     Actual project fonts can replace these variables later
+     without changing component styles.
+     ------------------------------------------------------- */
+
+  --font-display:
+    "Arial Narrow",
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  --font-editorial:
+    Georgia,
+    "Times New Roman",
+    Times,
+    serif;
+
+  --font-utility:
+    ui-monospace,
+    "SFMono-Regular",
+    "SF Mono",
+    Consolas,
+    "Liberation Mono",
+    monospace;
+
+  --line-height-body: 1.5;
+  --line-height-display: 0.9;
+
+
+  /* -------------------------------------------------------
+     LAYOUT — pragmatic recreation values
+     ------------------------------------------------------- */
+
+  --page-gutter: 1.25rem;
+
+  --header-height: 4rem;
+
+  --space-section-sm: 4rem;
+  --space-section-md: 6rem;
+  --space-section-lg: 9rem;
+
+
+  /* -------------------------------------------------------
+     GLOBAL LAYERING
+     ------------------------------------------------------- */
+
+  --z-content: 1;
+  --z-archive: 10;
+  --z-header: 40;
+  --z-draggable: 60;
+  --z-transition: 100;
+}
+
+
+/* Tablet */
+@media (min-width: 48rem) {
+  :root {
+    --page-gutter: 2rem;
+    --header-height: 4.5rem;
+
+    --space-section-sm: 5rem;
+    --space-section-md: 7rem;
+    --space-section-lg: 11rem;
+  }
+}
+
+
+/* Desktop */
+@media (min-width: 64rem) {
+  :root {
+    --page-gutter: 3rem;
+    --header-height: 5rem;
+
+    --space-section-sm: 6rem;
+    --space-section-md: 9rem;
+    --space-section-lg: 14rem;
+  }
+}
+
+
+/* =========================================================
+   BASE / RESET
+   ========================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg);
+
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+
+  font-family: var(--font-editorial);
+  line-height: var(--line-height-body);
+}
+
+img,
+picture,
+svg,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* =========================================================
+   GLOBAL APP SHELL
+   ========================================================= */
+
+.route-content {
+  position: relative;
+  z-index: var(--z-content);
+}
