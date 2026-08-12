@@ -58,7 +58,7 @@ export default function HomeHero() {
             text-base
             leading-[1.5]
 
-            text-[var(--color-text-secondary)]
+            text-[#787a7f]
 
             md:hidden
           "
