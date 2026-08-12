@@ -21,10 +21,10 @@ export default function CaseFolder({
         Responsive folder geometry:
 
         Mobile:
-        folder + small side-tab rail
+        folder + 3rem side-tab rail
 
         Tablet:
-        folder uses full width
+        folder + 3.25rem side-tab rail
 
         Desktop:
         folder + large navigation rail
@@ -75,14 +75,14 @@ lg:grid-cols-[minmax(0,1fr)_clamp(17rem,22vw,23rem)]
           Reserved rail.
 
           Mobile:
-          3rem through the grid definition.
+          3rem.
 
           Tablet:
-          this becomes a second grid item in the
-          same single-column layout, so hide it.
+          3.25rem, keeping vertical tabs outside
+          the case paper instead of over content.
 
           Desktop:
-          it returns as the large right-side rail.
+          expands into the large navigation rail.
         */}
        <div
   aria-hidden

@@ -194,6 +194,91 @@ function getFlipFitVars(
   ) as gsap.TweenVars;
 }
 
+type ResponsiveTransitionProfile = {
+  homeLeaveDuration: number;
+  homeEnterDuration: number;
+
+  tabLift: number;
+  tabLiftDuration: number;
+
+  surfaceColorDuration: number;
+  tabShapeDuration: number;
+  labelRotateDuration: number;
+
+  caseTabPeakX: number;
+  caseTabRestX: number;
+  caseTabMoveDuration: number;
+
+  heroEnterOffset: number;
+  contentEnterOffset: number;
+
+  overlayFadeDuration: number;
+};
+
+function getResponsiveTransitionProfile(): ResponsiveTransitionProfile {
+  const viewportWidth =
+    typeof window === "undefined"
+      ? 1280
+      : window.innerWidth;
+
+  /*
+   * Same transition architecture at every breakpoint.
+   * Only choreography changes. Source and destination
+   * x/y/size still come from real DOM geometry.
+   */
+  if (viewportWidth < 768) {
+    return {
+      homeLeaveDuration: 0.62,
+      homeEnterDuration: 0.66,
+      tabLift: -6,
+      tabLiftDuration: 0.1,
+      surfaceColorDuration: 0.44,
+      tabShapeDuration: 0.34,
+      labelRotateDuration: 0.44,
+      caseTabPeakX: 4,
+      caseTabRestX: 4,
+      caseTabMoveDuration: 0.22,
+      heroEnterOffset: 6,
+      contentEnterOffset: 8,
+      overlayFadeDuration: 0.16,
+    };
+  }
+
+  if (viewportWidth < 1024) {
+    return {
+      homeLeaveDuration: 0.72,
+      homeEnterDuration: 0.74,
+      tabLift: -10,
+      tabLiftDuration: 0.11,
+      surfaceColorDuration: 0.5,
+      tabShapeDuration: 0.42,
+      labelRotateDuration: 0.52,
+      caseTabPeakX: 5,
+      caseTabRestX: 4,
+      caseTabMoveDuration: 0.26,
+      heroEnterOffset: 8,
+      contentEnterOffset: 10,
+      overlayFadeDuration: 0.18,
+    };
+  }
+
+  return {
+    homeLeaveDuration: 0.78,
+    homeEnterDuration: 0.82,
+    tabLift: -16,
+    tabLiftDuration: 0.12,
+    surfaceColorDuration: 0.58,
+    tabShapeDuration: 0.5,
+    labelRotateDuration: 0.62,
+    caseTabPeakX: 6,
+    caseTabRestX: 4,
+    caseTabMoveDuration: 0.3,
+    heroEnterOffset: 10,
+    contentEnterOffset: 12,
+    overlayFadeDuration: 0.2,
+  };
+}
+
 function resolveCssColor(
   value: string,
 ): string {
@@ -746,6 +831,9 @@ export default function TransitionProvider({
 
         timelineRef.current?.kill();
 
+        const transitionProfile =
+          getResponsiveTransitionProfile();
+
         gsap.set(
           destinationTab,
           {
@@ -823,7 +911,8 @@ export default function TransitionProvider({
             {
               x: 0,
 
-              duration: 0.26,
+              duration:
+                transitionProfile.caseTabMoveDuration,
 
               ease:
                 "power2.inOut",
@@ -837,9 +926,11 @@ export default function TransitionProvider({
         timeline.to(
           destinationTab,
           {
-            x: 6,
+            x:
+              transitionProfile.caseTabPeakX,
 
-            duration: 0.3,
+            duration:
+              transitionProfile.caseTabMoveDuration,
 
             ease:
               "power3.out",
@@ -1207,6 +1298,9 @@ export default function TransitionProvider({
 
     timelineRef.current?.kill();
 
+    const transitionProfile =
+      getResponsiveTransitionProfile();
+
     /*
      * Flip owns geometry.
      */
@@ -1239,7 +1333,8 @@ export default function TransitionProvider({
       {
         ...surfaceFitVars,
 
-        duration: 0.78,
+        duration:
+          transitionProfile.homeLeaveDuration,
 
         ease:
           "power3.inOut",
@@ -1250,14 +1345,30 @@ export default function TransitionProvider({
     timeline.to(
       tab,
       {
+        y:
+          transitionProfile.tabLift,
+
+        duration:
+          transitionProfile.tabLiftDuration,
+
+        ease:
+          "power2.out",
+      },
+      0,
+    );
+
+    timeline.to(
+      tab,
+      {
         ...tabFitVars,
 
-        duration: 0.78,
+        duration:
+          transitionProfile.homeLeaveDuration,
 
         ease:
           "power3.inOut",
       },
-      0,
+      transitionProfile.tabLiftDuration,
     );
 
     timeline.to(
@@ -1268,7 +1379,8 @@ export default function TransitionProvider({
 
         borderRadius: 0,
 
-        duration: 0.58,
+        duration:
+          transitionProfile.surfaceColorDuration,
 
         ease:
           "power2.inOut",
@@ -1282,12 +1394,13 @@ export default function TransitionProvider({
         borderRadius:
           "0 2rem 2rem 0",
 
-        duration: 0.5,
+        duration:
+          transitionProfile.tabShapeDuration,
 
         ease:
           "power2.inOut",
       },
-      0.08,
+      transitionProfile.tabLiftDuration,
     );
 
     timeline.to(
@@ -1295,12 +1408,13 @@ export default function TransitionProvider({
       {
         rotation: 90,
 
-        duration: 0.62,
+        duration:
+          transitionProfile.labelRotateDuration,
 
         ease:
           "power2.inOut",
       },
-      0.08,
+      transitionProfile.tabLiftDuration,
     );
   }, [
     state.phase,
@@ -1392,6 +1506,9 @@ export default function TransitionProvider({
           return;
         }
 
+        const transitionProfile =
+          getResponsiveTransitionProfile();
+
         commitState(
           (current) => ({
             ...current,
@@ -1422,7 +1539,8 @@ export default function TransitionProvider({
             targetContent,
             {
               autoAlpha: 0,
-              y: 12,
+              y:
+                transitionProfile.contentEnterOffset,
             },
           );
         }
@@ -1432,7 +1550,8 @@ export default function TransitionProvider({
             targetHero,
             {
               autoAlpha: 0,
-              y: 10,
+              y:
+                transitionProfile.heroEnterOffset,
             },
           );
         }
@@ -1460,12 +1579,29 @@ export default function TransitionProvider({
         timelineRef.current =
           timeline;
 
+        const heroRevealAt =
+          transitionProfile.homeEnterDuration *
+          0.56;
+
+        const contentRevealAt =
+          transitionProfile.homeEnterDuration *
+          0.68;
+
+        const realTabRevealAt =
+          transitionProfile.homeEnterDuration *
+          0.83;
+
+        const overlayFadeAt =
+          transitionProfile.homeEnterDuration *
+          0.85;
+
         timeline.to(
           surface,
           {
             ...folderFitVars,
 
-            duration: 0.82,
+            duration:
+              transitionProfile.homeEnterDuration,
 
             ease:
               "power3.inOut",
@@ -1478,7 +1614,8 @@ export default function TransitionProvider({
           {
             ...tabFitVars,
 
-            duration: 0.82,
+            duration:
+              transitionProfile.homeEnterDuration,
 
             ease:
               "power3.inOut",
@@ -1492,12 +1629,18 @@ export default function TransitionProvider({
             borderRadius:
               "0.25rem",
 
-            duration: 0.42,
+            duration:
+              Math.min(
+                0.42,
+                transitionProfile.homeEnterDuration *
+                  0.52,
+              ),
 
             ease:
               "power2.out",
           },
-          0.25,
+          transitionProfile.homeEnterDuration *
+            0.3,
         );
 
         timeline.to(
@@ -1506,12 +1649,18 @@ export default function TransitionProvider({
             borderRadius:
               "0 1.75rem 1.75rem 0",
 
-            duration: 0.38,
+            duration:
+              Math.min(
+                0.38,
+                transitionProfile.homeEnterDuration *
+                  0.46,
+              ),
 
             ease:
               "power2.out",
           },
-          0.2,
+          transitionProfile.homeEnterDuration *
+            0.24,
         );
 
         timeline.to(
@@ -1519,7 +1668,12 @@ export default function TransitionProvider({
           {
             rotation: 90,
 
-            duration: 0.25,
+            duration:
+              Math.min(
+                0.25,
+                transitionProfile.homeEnterDuration *
+                  0.32,
+              ),
 
             ease:
               "power2.out",
@@ -1534,12 +1688,17 @@ export default function TransitionProvider({
               autoAlpha: 1,
               y: 0,
 
-              duration: 0.4,
+              duration:
+                Math.min(
+                  0.4,
+                  transitionProfile.homeEnterDuration *
+                    0.5,
+                ),
 
               ease:
                 "power3.out",
             },
-            0.46,
+            heroRevealAt,
           );
         }
 
@@ -1550,12 +1709,17 @@ export default function TransitionProvider({
               autoAlpha: 1,
               y: 0,
 
-              duration: 0.42,
+              duration:
+                Math.min(
+                  0.42,
+                  transitionProfile.homeEnterDuration *
+                    0.52,
+                ),
 
               ease:
                 "power3.out",
             },
-            0.56,
+            contentRevealAt,
           );
         }
 
@@ -1565,7 +1729,7 @@ export default function TransitionProvider({
             visibility:
               "visible",
           },
-          0.68,
+          realTabRevealAt,
         );
 
         timeline.to(
@@ -1576,12 +1740,13 @@ export default function TransitionProvider({
           {
             autoAlpha: 0,
 
-            duration: 0.2,
+            duration:
+              transitionProfile.overlayFadeDuration,
 
             ease:
               "power1.out",
           },
-          0.7,
+          overlayFadeAt,
         );
       },
       [
@@ -1673,6 +1838,9 @@ export default function TransitionProvider({
 
         timelineRef.current?.kill();
 
+        const transitionProfile =
+          getResponsiveTransitionProfile();
+
         gsap.set(
           folder,
           {
@@ -1703,7 +1871,8 @@ export default function TransitionProvider({
           gsap.set(
             activeTab,
             {
-              x: 6,
+              x:
+                transitionProfile.caseTabPeakX,
             },
           );
         }
@@ -1721,9 +1890,11 @@ export default function TransitionProvider({
           timeline.to(
             activeTab,
             {
-              x: 4,
+              x:
+                transitionProfile.caseTabRestX,
 
-              duration: 0.28,
+              duration:
+                transitionProfile.caseTabMoveDuration,
 
               ease:
                 "power2.out",

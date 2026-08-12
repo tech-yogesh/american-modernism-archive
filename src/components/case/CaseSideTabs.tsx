@@ -125,18 +125,9 @@ export default function CaseSideTabs({
                 relative
                 block
 
-                /*
-                 * Active tab movement is safe on
-                 * mobile/desktop because those have
-                 * reserved external rails.
-                 *
-                 * On tablet the tabs live inside the
-                 * folder, so don't push them farther
-                 * toward the viewport edge.
-                 */
                 ${
                   isActive
-                    ? "translate-x-1 md:translate-x-0 lg:translate-x-1"
+                    ? "translate-x-1"
                     : ""
                 }
 

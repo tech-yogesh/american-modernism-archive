@@ -92,8 +92,10 @@ export default function ArchitectTab({
           items-center
           justify-center
 
-          px-5
+          px-3
           pt-1
+
+          sm:px-4
 
           md:h-[3.25rem]
           md:min-w-[13rem]

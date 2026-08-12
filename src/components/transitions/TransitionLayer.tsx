@@ -86,13 +86,13 @@ export default function TransitionLayer({
           fixed
           right-0
           top-1/2
-          h-[10rem]
+          h-[11rem]
           w-12
           -translate-y-1/2
-          md:h-[12rem]
-          md:w-14
+          md:h-[13rem]
+          md:w-[3.25rem]
           lg:h-[14rem]
-          lg:w-16
+          lg:w-14
         "
       />
 
@@ -179,11 +179,17 @@ export default function TransitionLayer({
           data-transition-tab-label
           className="
             inline-block
-            whitespace-nowrap
-            px-4
-            text-[1.15rem]
-            md:text-[1.45rem]
-            lg:text-[1.85rem]
+            max-w-[7rem]
+            whitespace-normal
+            px-2
+            text-center
+            text-[0.8rem]
+            leading-[1.05]
+            md:max-w-none
+            md:whitespace-nowrap
+            md:px-4
+            md:text-xl
+            lg:text-[1.6rem]
           "
         >
           {state.label}
