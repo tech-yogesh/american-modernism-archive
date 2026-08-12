@@ -76,17 +76,19 @@ export default function HomeHero() {
     text-center
 
     font-[family-name:var(--font-editorial)]
-    text-lg
+    text-base
     font-light
     leading-[1.4]
     tracking-[-0.015em]
 
-    text-[var(--color-text-secondary)]
+    text-[#787a7f]
 
     antialiased
 
     md:block
-    lg:text-[1.5rem]
+    md:text-[1.05rem]
+
+    lg:text-[1.35rem]
   "
         >
           <span className="block">
