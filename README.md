@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# American Modernism Archive
+
+An interactive editorial archive about American modernist architecture. The site presents architect case studies as physical-feeling archive folders, with animated category browsing, case-to-case handoffs, image/video media views, and an about page that frames the project.
+
+## Tech Stack
+
+- Next.js 16 App Router
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- GSAP and GSAP Flip for route and folder transitions
+
+## Routes
+
+- `/` - home page with the American Modernism hero and interactive category folder stack
+- `/about` - editorial about page with image-led narrative sections
+- `/cases/[slug]` - statically generated architect case pages
+
+Current case slugs include:
+
+- `frank-lloyd-wright`
+- `irving-gill`
+- `frank-gehry`
+- `louis-kahn`
+- `i-m-pei`
+- `paul-rudolph`
+- `mary-colter`
+- `louis-sullivan`
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Build for production:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+```
 
-## Learn More
+Start the production server:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run start
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Run linting:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run lint
+```
 
-## Deploy on Vercel
+## Project Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```text
+src/
+  app/
+    page.tsx                 Home route
+    about/page.tsx           About route
+    cases/[slug]/page.tsx    Static architect case route
+    layout.tsx               Root layout, global header, transition provider
+    globals.css              Global styles and design tokens
+  components/
+    about/                   About page experience
+    case/                    Case page, project sections, media components
+    home/                    Home hero and folder stack
+    layout/                  Header and archive footer
+    navigation/              Architect tab controls
+    transitions/             GSAP route transition system
+  data/
+    about.ts                 About page content
+    cases.ts                 Architect case data
+    categories.ts            Category folders and architect grouping
+    navigation.ts            Case ordering and next-case lookup
+  types/                     Shared content and media types
+public/
+  images/
+    about/                   About page imagery
+    cases/                   Architect portraits and project images
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Editing Content
+
+Most site content is data-driven.
+
+- Edit homepage folder groups in `src/data/categories.ts`.
+- Edit architect bios, projects, layouts, and media references in `src/data/cases.ts`.
+- Edit the about page narrative and slides in `src/data/about.ts`.
+- Add images under `public/images`, then reference them with root-relative paths such as `/images/cases/frank-lloyd-wright/portrait.jpg`.
+
+The `/cases/[slug]` route is statically generated from `cases` in `src/data/cases.ts`. Because `dynamicParams` is disabled, each public case page must have a matching entry in that data file.
+
+## Notes
+
+- Route transitions are coordinated by `src/components/transitions/TransitionProvider.tsx`.
+- The home folder stack uses GSAP Flip to animate category expansion.
+- Case media opens in a client-side modal with image and YouTube embed support.
+- The project uses the `@/*` TypeScript path alias for imports from `src`.
