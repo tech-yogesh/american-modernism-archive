@@ -322,6 +322,7 @@ export default function AboutExperience({
             aria-hidden="true"
             className="
               -mt-1
+              text-white
             "
           >
             ×

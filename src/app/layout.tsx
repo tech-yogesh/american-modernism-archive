@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import GlobalHeader from "@/components/layout/GlobalHeader";
+import HeaderVisibility from "@/components/layout/HeaderVisibility";
 import TransitionProvider from "@/components/transitions/TransitionProvider";
 
 import "./globals.css";
@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <GlobalHeader />
+        <HeaderVisibility />
 
         <TransitionProvider>
           <main className="route-content">
