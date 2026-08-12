@@ -16,8 +16,8 @@ export default function HomeHero() {
         lg:pt-16
       "
     >
-     <h1
-  className="
+      <h1
+        className="
     whitespace-normal
     text-center
 
@@ -33,9 +33,9 @@ export default function HomeHero() {
     md:whitespace-nowrap
     md:text-left
   "
->
-  American Modernism
-</h1>
+      >
+        American Modernism
+      </h1>
 
       <div
         className="
@@ -71,19 +71,23 @@ export default function HomeHero() {
         {/* Tablet + Desktop */}
         <p
           className="
-            hidden
+    hidden
 
-            text-center
+    text-center
 
-            font-[family-name:var(--font-editorial)]
-            text-lg
-            leading-[1.45]
+    font-[family-name:var(--font-editorial)]
+    text-lg
+    font-light
+    leading-[1.4]
+    tracking-[-0.015em]
 
-            text-[var(--color-text-secondary)]
+    text-[var(--color-text-secondary)]
 
-            md:block
-            lg:text-[1.55rem]
-          "
+    antialiased
+
+    md:block
+    lg:text-[1.5rem]
+  "
         >
           <span className="block">
             A project exploring early 20th-century American architects,
