@@ -17,10 +17,12 @@ interface FolderProps {
   archiveItems: ArchiveItem[];
   isOpen: boolean;
   activeArchitectSlug: string | null;
+  hoveredArchitectSlug: string | null;
 
   onToggle: () => void;
   onHoverEnter: () => void;
   onHoverLeave: () => void;
+  onArchitectHoverChange: (slug: string | null) => void;
 
   onArchitectSelect: (
     slug: string,
@@ -36,11 +38,44 @@ export default function Folder({
   archiveItems,
   isOpen,
   activeArchitectSlug,
+  hoveredArchitectSlug,
   onToggle,
   onHoverEnter,
   onHoverLeave,
+  onArchitectHoverChange,
   onArchitectSelect,
 }: FolderProps) {
+  const hoveredArchitect =
+    architects.find(
+      (architect) =>
+        architect.slug ===
+        hoveredArchitectSlug,
+    ) ?? null;
+
+  const hoveredArchitectIndex =
+    hoveredArchitect
+      ? architects.findIndex(
+          (architect) =>
+            architect.slug ===
+            hoveredArchitect.slug,
+        )
+      : -1;
+
+  /*
+   * The first architect already shares the category folder's
+   * front layer/color, so the reference does not introduce a
+   * separate hover sheet for it.
+   *
+   * Only the second/third/etc. architect tabs reveal an
+   * additional physical layer.
+   */
+  const hasArchitectHoverLayer =
+    hoveredArchitectIndex > 0;
+
+  const hoverStripColor =
+    hoveredArchitect?.tabColor ??
+    color;
+
   const handlePointerEnter = (
     event: ReactPointerEvent<HTMLDivElement>,
   ) => {
@@ -104,7 +139,7 @@ export default function Folder({
           absolute
           left-0
           top-0
-          z-[2]
+          z-[5]
 
           flex
           h-12
@@ -130,12 +165,17 @@ export default function Folder({
               activeArchitectSlug ===
               architect.slug;
 
+            const isHovered =
+              hoveredArchitectSlug ===
+              architect.slug;
+
             return (
               <button
                 key={
                   architect.slug
                 }
                 type="button"
+                data-architect-button
                 data-architect-tab
                 data-architect-slug={
                   architect.slug
@@ -150,7 +190,15 @@ export default function Folder({
                     event.currentTarget,
                   )
                 }
-                className="
+                onMouseEnter={() =>
+                  onArchitectHoverChange(
+                    architect.slug,
+                  )
+                }
+                onMouseLeave={() =>
+                  onArchitectHoverChange(null)
+                }
+                className={`
                   pointer-events-auto
                   relative
 
@@ -164,8 +212,20 @@ export default function Folder({
                   bg-transparent
                   p-0
 
+                  transition-transform
+                  duration-300
+                  ease-[cubic-bezier(0.22,1,0.36,1)]
+
                   md:ml-0
-                "
+
+                  ${
+                    hasArchitectHoverLayer &&
+                    index <
+                      hoveredArchitectIndex
+                      ? "translate-y-4"
+                      : "translate-y-0"
+                  }
+                `}
                 style={{
                   zIndex: isActive
                     ? architects.length +
@@ -192,6 +252,56 @@ export default function Folder({
         )}
       </div>
 
+      {/*
+        Responsive architect hover plane.
+
+        This mirrors the reference interaction on mobile, tablet,
+        and desktop widths when hover input is available:
+
+        - first architect: no visible layer change
+        - later architect: reveal a 16px full-width sheet in that tab color
+        - tabs BEFORE the hovered architect move down with the main folder
+        - hovered tab and tabs AFTER it stay on the upper sheet
+        - the sheet sits behind every tab, preserving the fixed tab order
+
+        The left curve of the lowered first tab naturally exposes the small
+        colored sliver at the extreme left seen in the reference.
+      */}
+      <div
+        aria-hidden="true"
+        className={`
+          pointer-events-none
+          absolute
+          left-0
+          right-0.5
+          top-12
+          z-[3]
+
+          block
+          overflow-hidden
+          rounded-tr-[0.75rem]
+
+          transition-[height,opacity]
+          duration-300
+          ease-[cubic-bezier(0.22,1,0.36,1)]
+
+          md:top-[3.25rem]
+
+          lg:top-14
+
+          ${
+            hasArchitectHoverLayer
+              ? "h-4 opacity-100"
+              : "h-0 opacity-0"
+          }
+        `}
+        style={{
+          backgroundColor:
+            hoverStripColor,
+        }}
+      />
+
+
       {/* Folder body / stable hover region */}
       <div
         data-folder-hover-region
@@ -201,7 +311,7 @@ export default function Folder({
         onPointerLeave={
           handlePointerLeave
         }
-        className="
+        className={`
           pointer-events-auto
           absolute
           inset-x-0
@@ -212,10 +322,16 @@ export default function Folder({
           overflow-hidden
           rounded-[0.25rem]
 
-          md:top-[3.25rem]
+          transition-[top]
+          duration-300
+          ease-[cubic-bezier(0.22,1,0.36,1)]
 
-          lg:top-14
-        "
+          ${
+            hasArchitectHoverLayer
+              ? "top-16 md:top-[4.25rem] lg:top-[4.5rem]"
+              : "top-12 md:top-[3.25rem] lg:top-14"
+          }
+        `}
         style={{
           backgroundColor: color,
         }}

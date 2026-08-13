@@ -64,6 +64,14 @@ export default function FolderStack() {
     null,
   );
 
+  const [
+    hoveredArchitect,
+    setHoveredArchitect,
+  ] = useState<{
+    folderId: string;
+    slug: string;
+  } | null>(null);
+
   const pendingFlipStateRef =
     useRef<ReturnType<
       typeof Flip.getState
@@ -81,6 +89,18 @@ export default function FolderStack() {
 
   const isAnimatingRef =
     useRef(false);
+
+  /*
+   * If the mouse leaves the compact category hover target while a FLIP
+   * animation is still running, changeActiveFolder() cannot close the
+   * folder immediately because it intentionally ignores state changes
+   * during an active animation.
+   *
+   * Remember that leave here and close as soon as the current animation
+   * finishes. Re-entering the same category cancels the pending close.
+   */
+  const pendingHoverCloseRef =
+    useRef<string | null>(null);
 
   const {
     isTransitioning,
@@ -132,6 +152,9 @@ export default function FolderStack() {
 
         isAnimatingRef.current =
           false;
+
+        pendingHoverCloseRef.current =
+          null;
       };
     },
     {
@@ -305,6 +328,19 @@ export default function FolderStack() {
     (
       folderId: string,
     ) => {
+      /*
+       * The pointer is back over a valid category hover target.
+       * Cancel a leave that may have happened while the previous
+       * FLIP animation was still running.
+       */
+      if (
+        pendingHoverCloseRef.current ===
+        folderId
+      ) {
+        pendingHoverCloseRef.current =
+          null;
+      }
+
       if (isTransitioning) {
         return;
       }
@@ -352,7 +388,7 @@ export default function FolderStack() {
       }
 
       /*
-       * The last folder never responds by closing.
+       * The permanent final folder never closes.
        */
       if (
         folderId ===
@@ -362,9 +398,17 @@ export default function FolderStack() {
       }
 
       /*
-       * Close only the temporary folder being left.
-       *
-       * The permanent last folder remains open.
+       * Record the leave even when this folder has not finished opening
+       * yet. This is the race that previously left a folder stuck open:
+       * changeActiveFolder() ignores changes while FLIP is running.
+       */
+      pendingHoverCloseRef.current =
+        folderId;
+
+      /*
+       * If this folder is not the active temporary folder yet, its open
+       * animation may still be pending. The animation completion callback
+       * will see pendingHoverCloseRef and close it immediately afterwards.
        */
       if (
         activeFolderId !==
@@ -373,9 +417,67 @@ export default function FolderStack() {
         return;
       }
 
+      /*
+       * If FLIP is currently running, defer the close rather than losing
+       * the mouse-leave event.
+       */
+      if (isAnimatingRef.current) {
+        return;
+      }
+
+      pendingHoverCloseRef.current =
+        null;
+
       changeActiveFolder(
         null,
       );
+    };
+
+  /*
+   * ==================================================
+   * ARCHITECT TAB HOVER LAYER
+   * ==================================================
+   *
+   * This state is deliberately separate from folder open/close.
+   * Folder.tsx owns the complete visual hover geometry.
+   *
+   * Unlike the previous attempt, FolderStack does NOT move sibling
+   * folders during architect hover; the original reference keeps the
+   * overall stack position stable and reveals the extra sheet inside
+   * the hovered folder's own panel.
+   *
+   * We still avoid changing this state during an active folder or
+   * route transition so the existing FLIP/page-transition geometry
+   * remains stable.
+   */
+  const handleArchitectHoverChange =
+    (
+      folderId: string,
+      slug: string | null,
+    ) => {
+      if (
+        isTransitioning ||
+        isAnimatingRef.current
+      ) {
+        return;
+      }
+
+      if (!slug) {
+        setHoveredArchitect(
+          (current) =>
+            current?.folderId ===
+            folderId
+              ? null
+              : current,
+        );
+
+        return;
+      }
+
+      setHoveredArchitect({
+        folderId,
+        slug,
+      });
     };
 
   /*
@@ -668,6 +770,31 @@ export default function FolderStack() {
 
           isAnimatingRef.current =
             false;
+
+          /*
+           * A mouse-leave can happen before the opening FLIP completes.
+           * Now that the animation lock is released, honor that pending
+           * leave so the temporary folder cannot remain stuck open.
+           */
+          const pendingHoverClose =
+            pendingHoverCloseRef.current;
+
+          if (
+            pendingHoverClose &&
+            pendingHoverClose ===
+              activeFolderId
+          ) {
+            pendingHoverCloseRef.current =
+              null;
+
+            requestAnimationFrame(
+              () => {
+                changeActiveFolder(
+                  null,
+                );
+              },
+            );
+          }
         },
       );
 
@@ -683,6 +810,7 @@ export default function FolderStack() {
       revertOnUpdate: true,
     },
   );
+
 
   return (
     <section
@@ -708,6 +836,13 @@ export default function FolderStack() {
             const isTemporaryOpen =
               activeFolderId ===
               category.id;
+
+
+            const hoveredArchitectSlug =
+              hoveredArchitect?.folderId ===
+              category.id
+                ? hoveredArchitect.slug
+                : null;
 
             /*
              * KEY RULE:
@@ -778,6 +913,9 @@ export default function FolderStack() {
                   activeArchitectSlug={
                     activeArchitectSlug
                   }
+                  hoveredArchitectSlug={
+                    hoveredArchitectSlug
+                  }
                   onToggle={() =>
                     handleFolderToggle(
                       category.id,
@@ -791,6 +929,14 @@ export default function FolderStack() {
                   onHoverLeave={() =>
                     handleFolderHoverLeave(
                       category.id,
+                    )
+                  }
+                  onArchitectHoverChange={(
+                    slug,
+                  ) =>
+                    handleArchitectHoverChange(
+                      category.id,
+                      slug,
                     )
                   }
                   onArchitectSelect={(
