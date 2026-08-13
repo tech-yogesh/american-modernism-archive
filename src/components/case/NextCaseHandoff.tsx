@@ -4,6 +4,7 @@ import {
   useCallback,
   useEffect,
   useRef,
+  useState,
   type MouseEvent,
 } from "react";
 
@@ -32,6 +33,29 @@ const MAX_DELTA_PER_EVENT = 120;
 
 const BOTTOM_TOLERANCE = 4;
 
+const NEXT_ASIDE_START_PROGRESS = 0.3;
+
+const KEEP_SCROLLING_START_PROGRESS = 0.95;
+
+type AsidePhase =
+  | "hidden"
+  | "next-preview"
+  | "keep-scrolling";
+
+const CATEGORY_LABELS: Record<string, string> = {
+  "organic-early-modernism":
+    "Organic & Early Modernism",
+
+  expressive:
+    "Expressive",
+
+  "monumental-modernism":
+    "Monumental Modernism",
+
+  "contextual-transitional":
+    "Contextual & Transitional",
+};
+
 type NextArchitectSummary = Pick<
   ArchitectNavigationItem,
   | "name"
@@ -51,11 +75,13 @@ export default function NextCaseHandoff({
   const rootRef =
     useRef<HTMLElement>(null);
 
+  const [
+    asidePhase,
+    setAsidePhase,
+  ] = useState<AsidePhase>("hidden");
+
   const nameRef =
     useRef<HTMLAnchorElement>(null);
-
-  const cueRef =
-    useRef<HTMLDivElement>(null);
 
   const progressFillRef =
     useRef<HTMLDivElement>(null);
@@ -159,6 +185,89 @@ export default function NextCaseHandoff({
     );
   };
 
+  useEffect(() => {
+    let frameId: number | null = null;
+
+    const updateAsidePhase = () => {
+      frameId = null;
+
+      const maxScroll =
+        document.documentElement.scrollHeight -
+        window.innerHeight;
+
+      const progress =
+        maxScroll > 0
+          ? Math.min(
+              1,
+              Math.max(
+                0,
+                window.scrollY / maxScroll,
+              ),
+            )
+          : 0;
+
+      const nextPhase: AsidePhase =
+        progress >=
+        KEEP_SCROLLING_START_PROGRESS
+          ? "keep-scrolling"
+          : progress >=
+              NEXT_ASIDE_START_PROGRESS
+            ? "next-preview"
+            : "hidden";
+
+      setAsidePhase(
+        (currentPhase) =>
+          currentPhase === nextPhase
+            ? currentPhase
+            : nextPhase,
+      );
+    };
+
+    const scheduleUpdate = () => {
+      if (frameId !== null) {
+        return;
+      }
+
+      frameId =
+        window.requestAnimationFrame(
+          updateAsidePhase,
+        );
+    };
+
+    updateAsidePhase();
+
+    window.addEventListener(
+      "scroll",
+      scheduleUpdate,
+      {
+        passive: true,
+      },
+    );
+
+    window.addEventListener(
+      "resize",
+      scheduleUpdate,
+    );
+
+    return () => {
+      if (frameId !== null) {
+        window.cancelAnimationFrame(
+          frameId,
+        );
+      }
+
+      window.removeEventListener(
+        "scroll",
+        scheduleUpdate,
+      );
+
+      window.removeEventListener(
+        "resize",
+        scheduleUpdate,
+      );
+    };
+  }, [nextArchitect.slug]);
+
   useGSAP(
     () => {
       const root =
@@ -196,15 +305,11 @@ export default function NextCaseHandoff({
           const name =
             nameRef.current;
 
-          const cue =
-            cueRef.current;
-
           const progressFill =
             progressFillRef.current;
 
           if (
             !name ||
-            !cue ||
             !progressFill
           ) {
             return;
@@ -221,14 +326,6 @@ export default function NextCaseHandoff({
             {
               autoAlpha: 0,
               y: 24,
-            },
-          );
-
-          gsap.set(
-            cue,
-            {
-              autoAlpha: 0,
-              y: 10,
             },
           );
 
@@ -253,33 +350,19 @@ export default function NextCaseHandoff({
               paused: true,
             });
 
-          revealTimeline
-            .to(
-              name,
-              {
-                autoAlpha: 1,
-                y: 0,
+          revealTimeline.to(
+            name,
+            {
+              autoAlpha: 1,
+              y: 0,
 
-                duration: 0.5,
+              duration: 0.5,
 
-                ease:
-                  "power3.out",
-              },
-              0,
-            )
-            .to(
-              cue,
-              {
-                autoAlpha: 1,
-                y: 0,
-
-                duration: 0.34,
-
-                ease:
-                  "power2.out",
-              },
-              0.08,
-            );
+              ease:
+                "power3.out",
+            },
+            0,
+          );
 
           /*
            * ScrollTrigger only controls whether
@@ -391,6 +474,18 @@ export default function NextCaseHandoff({
                 ) {
                   extraScrollDeltaRef.current =
                     0;
+
+                  gsap.to(
+                    progressFill,
+                    {
+                      scaleX: 0,
+
+                      duration: 0.2,
+
+                      ease:
+                        "power2.out",
+                    },
+                  );
                 }
 
                 hasReachedBottomRef.current =
@@ -580,6 +675,11 @@ export default function NextCaseHandoff({
     nextArchitect.textColor ??
     "var(--color-text-primary)";
 
+  const nextCategoryLabel =
+    CATEGORY_LABELS[
+      nextArchitect.categoryId
+    ] ?? nextArchitect.categoryId;
+
   return (
     <section
       ref={rootRef}
@@ -725,64 +825,244 @@ export default function NextCaseHandoff({
             </Link>
           </div>
 
-          {/* Keep-scrolling desktop column */}
+          {/*
+            Desktop aside.
+
+            The existing wide next-architect surface on the
+            left stays exactly as it is.
+
+            This right-side rail is fixed on desktop:
+
+            < 30%   -> hidden
+            30-95%  -> compact architect card + yellow Next
+            >= 95%  -> Keep scrolling
+          */}
           <aside
             className="
-              flex
-              h-full
-              items-center
-              justify-center
+              pointer-events-none
+              fixed
+              right-[var(--page-gutter)]
+              bottom-8
+              z-[30]
 
-              bg-[var(--color-bg)]
+              hidden
+              w-[clamp(17rem,22vw,23rem)]
 
-              px-7
+              lg:block
             "
           >
+            {/* 30% -> 95%: compact next architect preview */}
             <div
-              ref={cueRef}
-              aria-hidden="true"
-              className="
-                relative
-                w-full
-                max-w-[17rem]
-                overflow-hidden
+              aria-hidden={
+                asidePhase !==
+                "next-preview"
+              }
+              className={`
+                flex
+                flex-col
+                items-end
+                gap-5
 
-                rounded-[1.35rem]
+                transition-[opacity,transform]
+                duration-500
+                ease-[cubic-bezier(0.22,1,0.36,1)]
 
-                bg-[var(--color-tab-yellow)]
-              "
+                ${
+                  asidePhase ===
+                  "next-preview"
+                    ? "pointer-events-auto translate-y-0 opacity-100"
+                    : "pointer-events-none translate-y-5 opacity-0"
+                }
+              `}
             >
-              <div
-                ref={
-                  progressFillRef
+              <Link
+                href={`/cases/${nextArchitect.slug}`}
+                onClick={
+                  handleNavigationClick
+                }
+                tabIndex={
+                  asidePhase ===
+                  "next-preview"
+                    ? 0
+                    : -1
                 }
                 className="
-                  absolute
-                  inset-0
-                  bg-white
-                "
-              />
+                  flex
+                  min-h-[14rem]
+                  w-80
+                  flex-col
+                  justify-between
 
-              <span
-                className="
-                  relative
-                  z-[1]
-                  block
+                  rounded-[1.55rem]
 
                   px-7
-                  py-4
+                  py-7
 
-                  text-center
+                  transition-transform
+                  duration-300
+                  ease-[cubic-bezier(0.22,1,0.36,1)]
+
+                  hover:-translate-y-1
+
+                  focus-visible:outline
+                  focus-visible:outline-2
+                  focus-visible:outline-offset-4
+                  focus-visible:outline-current
+                "
+                style={{
+                  backgroundColor:
+                    nextFileColor,
+
+                  color:
+                    nextTextColor,
+                }}
+              >
+                <span
+                  className="
+                    max-w-[13ch]
+
+                    font-[family-name:var(--font-editorial)]
+                    text-[clamp(1.25rem,1.7vw,1.75rem)]
+                    leading-[1.1]
+                  "
+                >
+                  {nextArchitect.name}
+                </span>
+
+                <span
+                  className="
+                    font-[family-name:var(--font-utility)]
+                    text-sm
+                    tracking-[0.01em]
+                  "
+                >
+                  {nextCategoryLabel}
+                </span>
+              </Link>
+
+              <Link
+                href={`/cases/${nextArchitect.slug}`}
+                onClick={
+                  handleNavigationClick
+                }
+                tabIndex={
+                  asidePhase ===
+                  "next-preview"
+                    ? 0
+                    : -1
+                }
+                className="
+                  inline-flex
+                  min-h-[4.4rem]
+                  w-[73%]
+                  items-center
+                  justify-center
+                  gap-3
+
+                  rounded-full
+
+                  bg-[var(--color-tab-yellow)]
+
+                  px-7
+                  py-3
+
                   font-[family-name:var(--font-utility)]
-                  text-base
-                  leading-[1.2]
+                  text-lg
                   text-black
+
+                  transition-transform
+                  duration-300
+                  ease-[cubic-bezier(0.22,1,0.36,1)]
+
+                  hover:-translate-y-1
+
+                  focus-visible:outline
+                  focus-visible:outline-2
+                  focus-visible:outline-offset-3
+                  focus-visible:outline-[var(--color-tab-yellow)]
                 "
               >
-                Keep scrolling
-                <br />
-                for the next page
-              </span>
+                <span>Next</span>
+
+                <span
+                  aria-hidden="true"
+                  className="text-xl"
+                >
+                  →
+                </span>
+              </Link>
+            </div>
+
+            {/* >= 95%: replace preview with Keep scrolling */}
+            <div
+              aria-hidden={
+                asidePhase !==
+                "keep-scrolling"
+              }
+              className={`
+                pointer-events-none
+                absolute
+                right-0
+                bottom-0
+
+                w-full
+                max-w-[17rem]
+
+                transition-[opacity,transform]
+                duration-500
+                ease-[cubic-bezier(0.22,1,0.36,1)]
+
+                ${
+                  asidePhase ===
+                  "keep-scrolling"
+                    ? "translate-x-0 opacity-100"
+                    : "translate-x-4 opacity-0"
+                }
+              `}
+            >
+              <div
+                className="
+                  relative
+                  w-full
+                  overflow-hidden
+
+                  rounded-[1.35rem]
+
+                  bg-[var(--color-tab-yellow)]
+                "
+              >
+                <div
+                  ref={
+                    progressFillRef
+                  }
+                  className="
+                    absolute
+                    inset-0
+                    bg-white
+                  "
+                />
+
+                <span
+                  className="
+                    relative
+                    z-[1]
+                    block
+
+                    px-7
+                    py-4
+
+                    text-center
+                    font-[family-name:var(--font-utility)]
+                    text-base
+                    leading-[1.2]
+                    text-black
+                  "
+                >
+                  Keep scrolling
+                  <br />
+                  for the next page
+                </span>
+              </div>
             </div>
           </aside>
         </div>
