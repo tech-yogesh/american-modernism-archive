@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import ArchitectVideoButton from "./media/ArchitectVideoButton";
 import CaseMediaCollage from "./media/CaseMediaCollage";
 
 import { buildCaseMedia } from "@/types/case-media";
@@ -21,6 +22,12 @@ export default function CaseContent({
   } = buildCaseMedia(
     caseData,
   );
+
+  const portraitVideo =
+    items.find(
+      (item) =>
+        item.type === "video",
+    ) ?? null;
 
   return (
     <div
@@ -96,6 +103,17 @@ export default function CaseContent({
     object-center
   "
               />
+
+              {portraitVideo && (
+                <ArchitectVideoButton
+                  youtubeId={
+                    portraitVideo.youtubeId
+                  }
+                  title={
+                    portraitVideo.title
+                  }
+                />
+              )}
             </div>
 
             <dl

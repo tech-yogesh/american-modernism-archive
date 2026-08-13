@@ -44,6 +44,12 @@ export const cases: ArchitectCase[] = [
             alt: "Frank Lloyd Wright residential interior",
           },
         ],
+        video: {
+          title: "Frank Lloyd Wright Documentary",
+          youtubeId: "cVZ5s7X7-Zo",
+          description:
+            "A short archival film exploring the work and ideas of Frank Lloyd Wright.",
+        },
       },
 
       {
@@ -146,8 +152,15 @@ export const cases: ArchitectCase[] = [
             alt: "Irving Gill architectural drawing",
           },
         ],
+        video: {
+          title: "Irving Gill Documentary",
+          youtubeId: "VJuit7vjNWw",
+          description:
+            "A short archival film exploring the work and ideas of Irving Gill.",
+        },
       },
     ],
+
   },
 
   {
@@ -193,6 +206,12 @@ export const cases: ArchitectCase[] = [
             alt: "Frank Gehry architectural detail",
           },
         ],
+          video: {
+          title: "Frank Gehry Documentary",
+          youtubeId: "AQe3nUy0gMk",
+          description:
+            "A short archival film exploring the work and ideas of Frank Gehry.",
+        },
       },
 
       {
@@ -292,6 +311,12 @@ export const cases: ArchitectCase[] = [
             alt: "Louis Kahn concrete architectural detail",
           },
         ],
+          video: {
+          title: "Louis Kahn Documentary",
+          youtubeId: "reAz0bmRHLw",
+          description:
+            "A short archival film exploring the work and ideas of Louis Kahn.",
+        },
       },
 
       {
@@ -394,6 +419,12 @@ export const cases: ArchitectCase[] = [
             alt: "I. M. Pei architectural detail",
           },
         ],
+          video: {
+          title: "I. M. Pei Documentary",
+          youtubeId: "UPBxO1v96gg",
+          description:
+            "A short archival film exploring the work and ideas of I. M. Pei.",
+        },
       },
     ],
   },
@@ -444,6 +475,12 @@ export const cases: ArchitectCase[] = [
             alt: "Paul Rudolph architectural drawing",
           },
         ],
+          video: {
+          title: "Paul Rudolph Documentary",
+          youtubeId: "QKUFFb2tcu4",
+          description:
+            "A short archival film exploring the work and ideas of Paul Rudolph.",
+        },
       },
     ],
   },
@@ -494,6 +531,12 @@ export const cases: ArchitectCase[] = [
             alt: "Mary Colter architectural interior",
           },
         ],
+          video: {
+          title: "Mary Colter Documentary",
+          youtubeId: "1dTkPbCRWbM",
+          description:
+            "A short archival film exploring the work and ideas of Mary Colter.",
+        },
       },
     ],
   },
@@ -544,6 +587,12 @@ export const cases: ArchitectCase[] = [
             alt: "Louis Sullivan commercial building detail",
           },
         ],
+          video: {
+          title: "Louis Sullivan Documentary",
+          youtubeId: "3Q50fP3s_Dw",
+          description:
+            "A short archival film exploring the work and ideas of Louis Sullivan.",
+        },
       },
     ],
   },

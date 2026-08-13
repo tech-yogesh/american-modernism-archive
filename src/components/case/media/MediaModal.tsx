@@ -122,7 +122,7 @@ export default function MediaModal({
         items-center
         justify-center
 
-        bg-black/80
+        bg-transparent
 
         px-4
         py-6
@@ -142,7 +142,7 @@ export default function MediaModal({
 
           rounded-[0.35rem]
 
-          bg-[var(--color-bg)]
+          
 
           shadow-2xl
         "
@@ -184,7 +184,7 @@ export default function MediaModal({
             md:text-sm
           "
         >
-          Close
+         
 
           <span
             aria-hidden="true"

@@ -27,7 +27,7 @@ export const categories: Category[] = [
       {
         id: "organic-archive-text",
         text:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi placerat massa id arcu pulvinar, maximus maximus erat maximus. Ut sed enim ultricies lorem malesuada congue. Sed et risus libero. Suspendisse nisi sapien, sodales sit amet tellus sed, facilisis cursus dolor.",
+          "Organic and early modern architecture explored a closer relationship between buildings, materials, landscape, and everyday life. These architects challenged historical conventions while developing spaces that felt more open, human, and connected to their surroundings.",
       },
     ],
   },
@@ -52,7 +52,7 @@ export const categories: Category[] = [
       {
         id: "expressive-archive-text",
         text:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent vitae erat sed mauris malesuada volutpat. Integer vulputate, risus sed posuere facilisis, lorem sapien consequat tellus, vitae ullamcorper massa justo vel erat. Suspendisse potenti. Curabitur feugiat neque vel lorem interdum, vitae dignissim ligula tincidunt.",
+          "Expressive architecture pushed modern design toward experimentation, movement, and sculptural form. Instead of treating buildings as simple containers, these architects used structure, material, and geometry to create bold and highly individual spatial experiences.",
       },
     ],
   },
@@ -89,7 +89,7 @@ export const categories: Category[] = [
       {
         id: "monumental-archive-text",
         text:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis malesuada neque eget lectus luctus, sed volutpat mauris volutpat. Nulla facilisi. Aliquam erat volutpat. Integer vitae arcu vitae justo tincidunt tincidunt. Vivamus feugiat, purus vitae pellentesque consectetur, velit lectus posuere magna, vitae malesuada neque lorem sed augue.",
+          "Monumental modernism focused on powerful geometry, structural clarity, and a strong sense of permanence. Large forms, carefully controlled light, and disciplined composition gave these buildings a civic and almost timeless presence.",
       },
     ],
   },
@@ -120,7 +120,7 @@ export const categories: Category[] = [
       {
         id: "contextual-archive-text",
         text:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi placerat massa id arcu pulvinar, maximus maximus erat maximus. Ut sed enim ultricies lorem malesuada congue. Sed et risus libero. Suspendisse nisi sapien, sodales sit amet tellus sed, facilisis cursus dolor. Fusce velit felis, semper sit amet dolor id.",
+          "Contextual and transitional architecture connected modern ideas with local identity, history, climate, and regional building traditions. These architects explored how new design approaches could evolve without completely disconnecting from the places and cultures around them.",
       },
     ],
   },
